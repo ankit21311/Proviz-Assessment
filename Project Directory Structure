@@ -1,0 +1,15 @@
+proviz-ai-school/
+├── client/
+│   ├── public/
+│   │   └── images/
+│   └── src/
+│       ├── components/
+│       ├── styles/
+│       └── App.js
+├── server/
+│   ├── config/
+│   ├── controllers/
+│   ├── models/
+│   └── routes/
+├── .env
+└── package.json

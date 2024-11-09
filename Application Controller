@@ -1,0 +1,60 @@
+// server/controllers/applicationController.js
+import { body, validationResult } from 'express-validator';
+import Application from '../models/Application.js';
+
+export const validateApplication = [
+  body('name').trim().notEmpty().withMessage('Name is required'),
+  body('phone').trim().notEmpty().withMessage('Phone number is required'),
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('statement').trim().notEmpty().withMessage('Statement is required')
+];
+
+export const submitApplication = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const application = new Application({
+      name: req.body.name,
+      phone: req.body.phone,
+      email: req.body.email,
+      statement: req.body.statement
+    });
+
+    await application.save();
+
+    // Send email notification to admin (implement your email service here)
+    
+    res.status(201).json({
+      success: true,
+      message: 'Application submitted successfully'
+    });
+  } catch (error) {
+    console.error('Application submission error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error submitting application'
+    });
+  }
+};
+
+export const getApplications = async (req, res) => {
+  try {
+    const applications = await Application.find()
+      .sort({ createdAt: -1 })
+      .select('-__v');
+    
+    res.json({
+      success: true,
+      data: applications
+    });
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching applications'
+    });
+  }
+};
